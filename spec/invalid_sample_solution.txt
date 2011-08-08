@@ -1,0 +1,13 @@
+class Person
+  attr_accessor :name
+	
+  def deluded(a,b)
+    if a==b
+      return false
+    end
+  end
+  
+  def some other method
+
+  end
+end
