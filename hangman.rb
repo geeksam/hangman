@@ -1,14 +1,16 @@
 class Hangman
-  attr_accessor :puzzle, :solution, :solution_diff
+  attr_accessor :puzzle, :solution, :solution_diff, :guesses_remaining
 
-  def load(puzzle_filepath, solution_filepath)
-    @puzzle = File.open(puzzle_filepath).read
-    @solution = File.open(solution_filepath).read
+  def load(puzzle_string, solution_string)
+    @puzzle = puzzle_string
+    @solution = solution_string
 
-    @solution_diff = _get_solution_diff
     if @puzzle.length != @solution.length
       raise BadInputDataError, "Puzzle and solution do not have the same number of characters and are therefore invalid"
     end
+
+    @guesses_remaining = 8
+    @solution_diff = _get_solution_diff
   end
 
   def _get_solution_diff

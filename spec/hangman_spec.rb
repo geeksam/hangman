@@ -3,17 +3,22 @@ require 'rspec'
 require './hangman.rb'
 
 describe Hangman do
+  before(:all) do
+    @valid_puzzle = File.open("spec/sample_puzzle.txt").read
+    @valid_solution = File.open("spec/sample_solution.txt").read
+  end
   describe "#load" do
     before(:each) do
       @hangman = Hangman.new
     end
 
     it "should reject puzzle and solution if they do not have the same number of characters" do
-      lambda { @hangman.load("spec/sample_puzzle.txt", "spec/invalid_sample_solution.txt") }.should raise_error(BadInputDataError)
+      valid_but_longer_solution = @valid_solution + "some other text"
+      lambda { @hangman.load(@valid_puzzle, valid_but_longer_solution) }.should raise_error(BadInputDataError)
     end    
 
     it "should generate a hash that maps each character that is part of the solution to a position in the string" do
-      @hangman.load("spec/sample_puzzle.txt", "spec/sample_solution.txt")
+      @hangman.load(@valid_puzzle, @valid_solution)
       correct_solution_diff = { 
         "i"=>[60], 
         "f"=>[61, 81], 
@@ -37,7 +42,7 @@ describe Hangman do
   describe "#guess" do
     before(:each) do
       @hangman = Hangman.new
-      @hangman.load("spec/sample_puzzle.txt", "spec/sample_solution.txt")
+      @hangman.load(@valid_puzzle, @valid_solution)
     end
 
     it "should return the number of occurrences when the symbol is in the puzzle" do
