@@ -3,7 +3,18 @@ class Hangman
                 :puzzle_with_guesses, :guesses_remaining,
                 :guessed
 
-  def load(puzzle_string, solution_string, number_of_guesses=10)
+  def self.load_if_filename(puzzle_or_filename)
+    puzzle_or_filename = File.open(puzzle_or_filename).read if File.exists?(puzzle_or_filename)
+    puzzle_or_filename
+  end
+
+  def self.load(puzzle, solution, guesses = 10)
+    puzzle   = load_if_filename(puzzle)
+    solution = load_if_filename(solution)
+    self.new(puzzle, solution, guesses)
+  end
+
+  def initialize(puzzle_string, solution_string, number_of_guesses=10)
     @puzzle = puzzle_string
     @puzzle_with_guesses = String.new(@puzzle)
     @solution = solution_string
