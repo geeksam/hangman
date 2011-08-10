@@ -1,19 +1,23 @@
 class Hangman
-  attr_accessor :puzzle, :solution, :solution_diff, :guesses_remaining
+  attr_accessor :puzzle, :solution, :solution_diff, 
+                :puzzle_with_guesses, :guesses_remaining,
+                :guessed
 
-  def load(puzzle_string, solution_string)
+  def load(puzzle_string, solution_string, number_of_guesses=10)
     @puzzle = puzzle_string
     @solution = solution_string
 
     if @puzzle.length != @solution.length
-      raise BadInputDataError, "Puzzle and solution do not have the same number of characters and are therefore invalid"
+      raise BadInputDataError, "Puzzle and solution do not have the same 
+                                number of characters and are therefore invalid"
     end
 
-    @guesses_remaining = 8
-    @solution_diff = _get_solution_diff
+    @guessed = { :correct => [], :incorrect => [] }
+    @guesses_remaining = number_of_guesses
+    @solution_diff = get_solution_diff
   end
 
-  def _get_solution_diff
+  def get_solution_diff
     diff = {}
     @puzzle.split("").each_with_index do |puzzle_letter, pos|
       solution_letter = @solution[pos]
@@ -26,7 +30,20 @@ class Hangman
   end
 
   def guess(symbol)
-    raise InvalidGuessError if not valid_guess?(symbol)
+    raise InvalidGuessError, "Invalid guess character" if not valid_guess?(symbol)
+    raise InvalidGuessError, "You can not guess the same thing twice" if @guessed.values.flatten.include?(symbol)
+
+    if @solution_diff.include?(symbol)
+      @guessed[:correct].push symbol 
+    else
+      @guessed[:incorrect].push symbol
+      @guesses_remaining -= 1
+    end
+
+    number_of_occurences_in_solution(symbol)
+  end
+
+  def number_of_occurences_in_solution(symbol)
     if @solution_diff.include?(symbol)
       @solution_diff[symbol].count
     else
@@ -39,6 +56,7 @@ class Hangman
     return false if symbol.length > 1 
     true
   end
+
 end
 
 class InvalidGuessError < StandardError; end

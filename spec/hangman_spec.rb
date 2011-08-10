@@ -7,6 +7,7 @@ describe Hangman do
     @valid_puzzle = File.open("spec/sample_puzzle.txt").read
     @valid_solution = File.open("spec/sample_solution.txt").read
   end
+
   describe "#load" do
     before(:each) do
       @hangman = Hangman.new
@@ -60,6 +61,30 @@ describe Hangman do
       invalid_characters.each do |invalid_character|
         lambda { @hangman.guess(invalid_character) }.should raise_error(InvalidGuessError) 
       end
+    end
+
+    it "should have one less guess remaining if the guess is incorrect" do
+      #expect { @hangman.guess("z") }.to change(@hangman.guesses_remaining, :abs).by(-1)
+      expect { @hangman.guess("z") }.to change{@hangman.guesses_remaining}.by(-1)
+    end 
+
+    it "should not affect the number of guesses if the guess is correct" do
+      expect { @hangman.guess("a") }.not_to change{@hangman.guesses_remaining}
+    end
+
+    it "should raise an InvalidGuessError if it has already been guessed" do
+      lambda { 2.times do; @hangman.guess("a"); end }.should raise_error(InvalidGuessError)
+    end 
+
+    it "should add (in)correctly guessed symbols to the guessed[:(in)correct] attribute" do
+      correct = %w(a b)
+      incorrect = %w(z x)
+
+      correct.each do |s| @hangman.guess(s); end;
+      incorrect.each do |s| @hangman.guess(s); end;
+
+      @hangman.guessed[:correct].should == ["a","b"]
+      @hangman.guessed[:incorrect].should == ["z","x"]
     end
   end
 end
