@@ -3,19 +3,17 @@ require 'rspec'
 require './hangman.rb'
 
 describe Hangman do
-  before(:all) do
-    @valid_puzzle = File.open("spec/sample_puzzle.txt").read
-    @valid_solution = File.open("spec/sample_solution.txt").read
-  end
+  ValidPuzzle   = File.open("spec/sample_puzzle.txt").read
+  ValidSolution = File.open("spec/sample_solution.txt").read
 
   describe "#load" do
     it "should reject puzzle and solution if they do not have the same number of characters" do
-      valid_but_longer_solution = @valid_solution + "some other text"
-      lambda { Hangman.load(@valid_puzzle, valid_but_longer_solution) }.should raise_error(BadInputDataError)
+      valid_but_longer_solution = ValidSolution + "some other text"
+      lambda { Hangman.load(ValidPuzzle, valid_but_longer_solution) }.should raise_error(BadInputDataError)
     end    
 
     it "should generate a hash that maps each character that is part of the solution to a position in the string" do
-      @hangman = Hangman.load(@valid_puzzle, @valid_solution)
+      @hangman = Hangman.load(ValidPuzzle, ValidSolution)
       correct_solution_diff = { 
         "i"=>[60], 
         "f"=>[61, 81], 
@@ -38,7 +36,7 @@ describe Hangman do
 
   describe "#guess" do
     before(:each) do
-      @hangman = Hangman.load(@valid_puzzle, @valid_solution)
+      @hangman = Hangman.load(ValidPuzzle, ValidSolution)
     end
 
     it "should not allow guessing if there are no guesses remaining" do
@@ -91,7 +89,7 @@ describe Hangman do
 
   describe "#fill_puzzle_in_with" do
     before(:each) do
-      @hangman = Hangman.load(@valid_puzzle, @valid_solution)
+      @hangman = Hangman.load(ValidPuzzle, ValidSolution)
     end
 
     it "should be called by guess to automatically fill in puzzle_with_guesses with the appropriate symbols" do
