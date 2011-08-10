@@ -46,6 +46,12 @@ describe Hangman do
       @hangman.load(@valid_puzzle, @valid_solution)
     end
 
+    it "should not allow guessing if there are no guesses remaining" do
+      @hangman.guesses_remaining = 1
+      symbol_not_in_solution = "z"
+      expect { @hangman.guess(symbol_not_in_solution) }.to throw_symbol(:game_over)
+    end
+
     it "should return the number of occurrences when the symbol is in the puzzle" do
       @hangman.guess("a").should == 2
       @hangman.guess("r").should == 2

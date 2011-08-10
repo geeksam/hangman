@@ -39,6 +39,7 @@ class Hangman
   def guess(symbol)
     raise InvalidGuessError, "Invalid guess character" if not valid_guess?(symbol)
     raise InvalidGuessError, "You can not guess the same thing twice" if @guessed.values.flatten.include?(symbol)
+    raise InvalidGuessError, "No guesses remaining" if @guesses_remaining <= 0
 
     if @solution_diff.include?(symbol)
       @guessed[:correct].push symbol 
@@ -46,6 +47,7 @@ class Hangman
     else
       @guessed[:incorrect].push symbol
       @guesses_remaining -= 1
+      throw :game_over if @guesses_remaining == 0
     end
 
     number_of_occurences_in_solution(symbol)
