@@ -8,11 +8,11 @@ describe Hangman do
     @valid_solution = File.open("spec/sample_solution.txt").read
   end
 
-  describe "#load" do
-    before(:each) do
-      @hangman = Hangman.new
-    end
+  before(:each) do
+    @hangman = Hangman.new
+  end
 
+  describe "#load" do
     it "should reject puzzle and solution if they do not have the same number of characters" do
       valid_but_longer_solution = @valid_solution + "some other text"
       lambda { @hangman.load(@valid_puzzle, valid_but_longer_solution) }.should raise_error(BadInputDataError)
@@ -76,7 +76,7 @@ describe Hangman do
       lambda { 2.times do; @hangman.guess("a"); end }.should raise_error(InvalidGuessError)
     end 
 
-    it "should add (in)correctly guessed symbols to the guessed[:(in)correct] attribute" do
+    it "should add (in)correctly guessed symbols to guessed[:(in)correct]" do
       correct = %w(a b)
       incorrect = %w(z x)
 
@@ -85,6 +85,20 @@ describe Hangman do
 
       @hangman.guessed[:correct].should == ["a","b"]
       @hangman.guessed[:incorrect].should == ["z","x"]
+    end
+  end
+
+  describe "#fill_puzzle_in_with" do
+    before(:each) do
+      @hangman.load(@valid_puzzle, @valid_solution)
+    end
+
+    it "should be called by guess to automatically fill in puzzle_with_guesses with the appropriate symbols" do
+      @hangman.puzzle_with_guesses[63].should == "_"
+      @hangman.puzzle_with_guesses[82].should == "_"
+      @hangman.guess("a")
+      @hangman.puzzle_with_guesses[63].should == "a"
+      @hangman.puzzle_with_guesses[82].should == "a"
     end
   end
 end
