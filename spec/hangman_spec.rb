@@ -14,6 +14,14 @@ describe Hangman do
 
     it "should generate a hash that maps each character that is part of the solution to a position in the string" do
       @hangman = Hangman.load(ValidPuzzle, ValidSolution)
+      # In this style of test, you've asserted the complete and correct solution.
+      # Another style might be to spot-check a few values, assuming that if those were right, the rest probably was too.
+      # (Both are fine in this case, but this is about the upper limit of test complexity I'm usually comfortable with.)
+      # 
+      # However, this test probably knows too much about the thing it's testing.
+      # If you tweak your underlying implementation, this test will fail even if the class still behaves
+      # exactly the same when sent a series of messages.
+      # What value does this particular data structure -- on its own -- provide to a consumer of the class?
       correct_solution_diff = { 
         "i"=>[60], 
         "f"=>[61, 81], 
