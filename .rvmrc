@@ -1,2 +1,2 @@
-rvm use ruby-1.8.7-p302@hangman --create --install
+rvm use ruby-1.9.2-p180@hangman --create --install
 bundle check
