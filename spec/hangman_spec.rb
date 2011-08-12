@@ -12,16 +12,9 @@ describe Hangman do
       lambda { Hangman.load(ValidPuzzle, valid_but_longer_solution) }.should raise_error(BadInputDataError)
     end    
 
+    #Marked for deletion! Leaving it for now ..
     it "should generate a hash that maps each character that is part of the solution to a position in the string" do
       @hangman = Hangman.load(ValidPuzzle, ValidSolution)
-      # In this style of test, you've asserted the complete and correct solution.
-      # Another style might be to spot-check a few values, assuming that if those were right, the rest probably was too.
-      # (Both are fine in this case, but this is about the upper limit of test complexity I'm usually comfortable with.)
-      # 
-      # However, this test probably knows too much about the thing it's testing.
-      # If you tweak your underlying implementation, this test will fail even if the class still behaves
-      # exactly the same when sent a series of messages.
-      # What value does this particular data structure -- on its own -- provide to a consumer of the class?
       correct_solution_diff = { 
         "i"=>[60], 
         "f"=>[61, 81], 
@@ -51,6 +44,7 @@ describe Hangman do
       @hangman.guesses_remaining = 1
       symbol_not_in_solution = "z"
       # I don't often see throw/catch used in Ruby.  Still working through Exceptional Ruby myself, though, so maybe I'll find more reasons to use them.
+      # Brent: I might be wrong in doing it but my justification is that I believe catch and throw should be used to break from a loop / control flow, and in this instance we are trying to break from the 'game loop' so it seems like it's a good use case. What do you usually see used instead of catch/throw in these situations?
       expect { @hangman.guess(symbol_not_in_solution) }.to throw_symbol(:game_over)
     end
 
@@ -65,16 +59,17 @@ describe Hangman do
     end 
 
     it "should raise an InvalidGuessError if it is not an acceptable guess string" do
-      # Underscores have been known to appear in the answer key as well.  Not sure this behavior makes sense.
+      # Sam: Underscores have been known to appear in the answer key as well.  Not sure this behavior makes sense.
       # Possibly a guess of "abc" should be treated as .guess('a'); .guess('b'); .guess('c') ?
-      invalid_characters = %w(aa _) 
+      # Brent: Good point, I will look at incorporating this. If this is the case, I can't think of any invalid guesses! I'll leave this here nonetheless
+      invalid_characters = %w() 
       invalid_characters.each do |invalid_character|
         lambda { @hangman.guess(invalid_character) }.should raise_error(InvalidGuessError) 
       end
     end
 
     it "should have one less guess remaining if the guess is incorrect" do
-      #expect { @hangman.guess("z") }.to change(@hangman.guesses_remaining, :abs).by(-1)
+      #Brent: What's the reasoning behind including abs? Doesn't seem to work when I do it - Rspec says it was not changed
       expect { @hangman.guess("z") }.to change{@hangman.guesses_remaining}.by(-1)
     end 
 
@@ -83,42 +78,17 @@ describe Hangman do
     end
 
     it "should raise an InvalidGuessError if it has already been guessed" do
-      # Or, consider this a no-op
+      # Sam: Or, consider this a no-op
+      # Brent: What is a no-op?
       lambda { 2.times do; @hangman.guess("a"); end }.should raise_error(InvalidGuessError)
     end 
 
     it "should add (in)correctly guessed symbols to guessed[:(in)correct]" do
       guesses = %w[a b z x]
-      guesses.each { |s| @hangman.guess(s) }
-#                     ^ I almost always just use 'e' (short for 'element') here,
-#                       unless the iterating block is more than a line or two long.
-#                       It saves me having to think of a name for something that doesn't matter,
-#                       and saves the reader from having to pay attention to it (as long as they know the convention).
-#                       Fun fact:  did you know that '_' is a valid Ruby variable name?  (It has special behavior in IRB, though.)
-#                       That comes in handy when you're iterating across, say, a table, and don't care about every column.
+      guesses.each { |e| @hangman.guess(e) }
 
-      @hangman.guessed[:correct].should == %w[a b]
-      @hangman.guessed[:incorrect].should == %[z x]
-    end
-  end
-
-  # I don't typically test 'helper' methods, as these are (a) often marked protected or private,
-  # and (b) created via refactoring.  Because they're internal to the class, I tend to consider them
-  # fair game for drastic refactoring, which tends to break tests that expected them to be there.
-  # Much like the above test on #solution_diff, this should probably not be carried forward.
-  # (The behavior is subject to change, and the test doesn't tell us much about it.)
-  describe "#fill_puzzle_in_with" do
-    before(:each) do
-      @hangman = Hangman.load(ValidPuzzle, ValidSolution)
-    end
-
-    # Another style point:  when a test description says "#foo should be called when bar", I expect to see a mock or stub.
-    it "should be called by guess to automatically fill in puzzle_with_guesses with the appropriate symbols" do
-      @hangman.puzzle_with_guesses[63].should == "_"
-      @hangman.puzzle_with_guesses[82].should == "_"
-      @hangman.guess("a")
-      @hangman.puzzle_with_guesses[63].should == "a"
-      @hangman.puzzle_with_guesses[82].should == "a"
+      @hangman.guessed[:correct].should == %w(a b)
+      @hangman.guessed[:incorrect].should == %w(z x)
     end
   end
 end
