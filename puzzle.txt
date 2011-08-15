@@ -1,9 +1,0 @@
-class Person
-  attr_accessor :name
-	
-  def deluded(a,b)
-    __ ____
-      ______ _____
-    ___
-  end
-end
