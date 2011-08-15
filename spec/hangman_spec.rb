@@ -40,17 +40,22 @@ describe Hangman do
       # Brent: I might be wrong in doing it but my justification is that I believe catch and throw should be used to break from a loop / control flow, and in this instance we are trying to break from the 'game loop' so it seems like it's a good use case. What do you usually see used instead of catch/throw in these situations?
       expect { @hangman.guess(symbol_not_in_solution) }.to throw_symbol(:game_over)
     end
+    it "should return the number of occurrences when the symbol is in the puzzle" do
+      @hangman.guess("a").should == 2
+      @hangman.guess("r").should == 2
+      @hangman.guess("i").should == 1
+    end
+
+    it "should return 0 when the symbol is valid but is not in the puzzle" do
+      @hangman.guess("z").should == 0
+    end 
+
+    it "should accept guesses with more than one symbol at a time and apply them in order from left to right" do
+      @hangman.guess("abc")
+      #How do I test this?
+    end
+
   end
-#    it "should return the number of occurrences when the symbol is in the puzzle" do
-#      @hangman.guess("a").should == 2
-#      @hangman.guess("r").should == 2
-#      @hangman.guess("i").should == 1
-#    end
-#
-#    it "should return 0 when the symbol is valid but is not in the puzzle" do
-#      @hangman.guess("z").should == 0
-#    end 
-#
 #    it "should raise an InvalidGuessError if it is not an acceptable guess string" do
 #      # Sam: Underscores have been known to appear in the answer key as well.  Not sure this behavior makes sense.
 #      # Possibly a guess of "abc" should be treated as .guess('a'); .guess('b'); .guess('c') ?
