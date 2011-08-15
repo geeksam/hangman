@@ -6,26 +6,6 @@ describe Hangman do
   ValidPuzzle = File.open("spec/sample_puzzle.txt").read
 
   describe "#new_game" do
-    it "should generate a hash that maps each character that is part of the solution to a position in the string" do
-      @hangman = Hangman.new_game(ValidPuzzle)
-      correct_solution_diff = { 
-        "i"=>[60], 
-        "f"=>[61, 81], 
-        "a"=>[63, 82], 
-        "="=>[64,65],
-        "b"=>[66], 
-        "r"=>[74, 78], 
-        "e"=>[75, 85, 91],
-        "t"=>[76], 
-        "u"=>[77],
-        "n"=>[79, 92], 
-        "l"=>[83], 
-        "s"=>[84], 
-        "d"=>[93] 
-      }     
-          
-      @hangman.solution_diff.should == correct_solution_diff
-    end
   end
 
   describe "#guess" do
