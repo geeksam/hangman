@@ -55,39 +55,39 @@ describe Hangman do
       #How do I test this?
     end
 
+    it "should raise an InvalidGuessError if it is not an acceptable guess string" do
+      # Sam: Underscores have been known to appear in the answer key as well.  Not sure this behavior makes sense.
+      # Possibly a guess of "abc" should be treated as .guess('a'); .guess('b'); .guess('c') ?
+      # Brent: Good point, I will look at incorporating this. If this is the case, I can't think of any invalid guesses! I'll leave this here nonetheless
+      invalid_characters = %w() 
+      invalid_characters.each do |invalid_character|
+        lambda { @hangman.guess(invalid_character) }.should raise_error(InvalidGuessError) 
+      end
+    end
+
+    it "should have one less guess remaining if the guess is incorrect" do
+      #Brent: What's the reasoning behind including abs? Doesn't seem to work when I do it - Rspec says it was not changed
+      expect { @hangman.guess("z") }.to change{@hangman.guesses_remaining}.by(-1)
+    end 
+
+    it "should not affect the number of guesses if the guess is correct" do
+      expect { @hangman.guess("a") }.not_to change{@hangman.guesses_remaining}
+    end
+
+    it "should raise an InvalidGuessError if it has already been guessed" do
+      # Sam: Or, consider this a no-op
+      # Brent: What is a no-op?
+      pending "This test may no longer be necessary - if someone wants to guess the same letter twice, that's their fault!"
+      #lambda { 2.times do; @hangman.guess("a"); end }.should raise_error(InvalidGuessError)
+    end 
+
+    it "should add (in)correctly guessed symbols to guessed[:(in)correct]" do
+      guesses = %w[a b z x]
+      guesses.each { |e| @hangman.guess(e) }
+
+      @hangman.guessed[:correct].should == %w(a b)
+      @hangman.guessed[:incorrect].should == %w(z x)
+    end
   end
-#    it "should raise an InvalidGuessError if it is not an acceptable guess string" do
-#      # Sam: Underscores have been known to appear in the answer key as well.  Not sure this behavior makes sense.
-#      # Possibly a guess of "abc" should be treated as .guess('a'); .guess('b'); .guess('c') ?
-#      # Brent: Good point, I will look at incorporating this. If this is the case, I can't think of any invalid guesses! I'll leave this here nonetheless
-#      invalid_characters = %w() 
-#      invalid_characters.each do |invalid_character|
-#        lambda { @hangman.guess(invalid_character) }.should raise_error(InvalidGuessError) 
-#      end
-#    end
-#
-#    it "should have one less guess remaining if the guess is incorrect" do
-#      #Brent: What's the reasoning behind including abs? Doesn't seem to work when I do it - Rspec says it was not changed
-#      expect { @hangman.guess("z") }.to change{@hangman.guesses_remaining}.by(-1)
-#    end 
-#
-#    it "should not affect the number of guesses if the guess is correct" do
-#      expect { @hangman.guess("a") }.not_to change{@hangman.guesses_remaining}
-#    end
-#
-#    it "should raise an InvalidGuessError if it has already been guessed" do
-#      # Sam: Or, consider this a no-op
-#      # Brent: What is a no-op?
-#      lambda { 2.times do; @hangman.guess("a"); end }.should raise_error(InvalidGuessError)
-#    end 
-#
-#    it "should add (in)correctly guessed symbols to guessed[:(in)correct]" do
-#      guesses = %w[a b z x]
-#      guesses.each { |e| @hangman.guess(e) }
-#
-#      @hangman.guessed[:correct].should == %w(a b)
-#      @hangman.guessed[:incorrect].should == %w(z x)
-#    end
-#  end
 end
 
