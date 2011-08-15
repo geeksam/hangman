@@ -1,6 +1,10 @@
 require_relative 'hangman_parser.rb'
 
 class Hangman
+  # Sam: These classes don't make sense outside this namespace, so I moved them.
+  class InvalidGuessError < StandardError; end
+  class BadInputDataError < StandardError; end
+
   attr_accessor :puzzle, :solution, :solution_diff, 
                 :puzzle_with_guesses, :guesses_remaining,
                 :guessed
@@ -22,6 +26,9 @@ class Hangman
     @solution      = parser.solution
     @solution_diff = parser.solution_diff 
     
+    # Sam:  I assume you're calling String.new because you want a separate object
+    # so you can change its state as the game progresses?  If so, Object#dup would
+    # probably express that intention a bit better.
     @puzzle_with_guesses = String.new(@puzzle)
     @guessed             = { :correct => [], :incorrect => [] }
     @guesses_remaining   = guesses
@@ -84,5 +91,3 @@ class Hangman
 
 end
 
-class InvalidGuessError < StandardError; end
-class BadInputDataError < StandardError; end

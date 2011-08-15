@@ -18,6 +18,7 @@ describe Hangman do
       symbol_not_in_solution = "z"
       # I don't often see throw/catch used in Ruby.  Still working through Exceptional Ruby myself, though, so maybe I'll find more reasons to use them.
       # Brent: I might be wrong in doing it but my justification is that I believe catch and throw should be used to break from a loop / control flow, and in this instance we are trying to break from the 'game loop' so it seems like it's a good use case. What do you usually see used instead of catch/throw in these situations?
+      # Sam: Exceptions, mostly (intentional and otherwise).
       expect { @hangman.guess(symbol_not_in_solution) }.to throw_symbol(:game_over)
     end
     it "should return the number of occurrences when the symbol is in the puzzle" do
@@ -57,6 +58,8 @@ describe Hangman do
     it "should raise an InvalidGuessError if it has already been guessed" do
       # Sam: Or, consider this a no-op
       # Brent: What is a no-op?
+      # Sam: "No Operation" -- the machine instruction you used on ancient computers when
+      # you needed to waste some time.  ;>  aka "NOP", for one assembly version of same.
       pending "This test may no longer be necessary - if someone wants to guess the same letter twice, that's their fault!"
       #lambda { 2.times do; @hangman.guess("a"); end }.should raise_error(InvalidGuessError)
     end 
