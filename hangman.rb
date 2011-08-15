@@ -8,25 +8,52 @@ class Hangman
     puzzle_or_filename
   end
 
-  def self.load(puzzle, solution, guesses = 10)
-    puzzle   = load_if_filename(puzzle)
-    solution = load_if_filename(solution)
-    self.new(puzzle, solution, guesses)
+  def self.new_game(puzzle, guesses = 10) 
+    puzzle = load_if_filename(puzzle)
+    self.new(puzzle, guesses)
   end
 
-  def initialize(puzzle_string, solution_string, number_of_guesses=10)
-    @puzzle = puzzle_string
+  #Changed a variable name from number_of_guesses to guesses to match self.load, to avoid confusion about why the same variable might be named differently
+  def initialize(puzzle_data, guesses=10)
+    @puzzle, @solution   = load_puzzle puzzle_data
+    @solution_diff       = get_solution_diff
     @puzzle_with_guesses = String.new(@puzzle)
-    @solution = solution_string
 
-    if @puzzle.length != @solution.length
-      raise BadInputDataError, "Puzzle and solution do not have the same 
-                                number of characters and are therefore invalid"
+    @guessed             = { :correct => [], :incorrect => [] }
+    @guesses_remaining   = guesses
+  end
+
+  def hangman_instruction?(line)
+    comment_line_regexp = /^\s*[#][\^\s]*HANGMAN$/
+    !!(line.match(comment_line_regexp))
+  end
+
+  def hide_solution(solution, instruction)
+    obscured_solution = String.new(solution)
+    instruction.split("").each_with_index do |letter, pos|
+      if letter == "^"
+        obscured_solution[pos] = "_"
+      end 
     end
 
-    @guessed = { :correct => [], :incorrect => [] }
-    @guesses_remaining = number_of_guesses
-    @solution_diff = get_solution_diff
+    obscured_solution
+  end
+
+  def load_puzzle(puzzle_data)
+    puzzle, solution, previous_line = "", "", ""
+   
+    #split on \n without consume by using ?= lookahead 
+    puzzle_data_by_line = puzzle_data.split(/(?=\n)/)
+  
+    puzzle_data_by_line.each_with_index do |line, num|
+      next if hangman_instruction?(line) 
+      next_line = puzzle_data_by_line[num+1] || :EOF
+
+      solution += line
+      puzzle   += hangman_instruction?(next_line) ? hide_solution(line, next_line) : line
+    end
+
+    return puzzle, solution
   end
 
   def get_solution_diff
@@ -51,7 +78,7 @@ class Hangman
     raise InvalidGuessError, "Invalid guess character" if not valid_guess?(symbol)
     raise InvalidGuessError, "You can not guess the same thing twice" if @guessed.values.flatten.include?(symbol)
     raise InvalidGuessError, "No guesses remaining" if @guesses_remaining <= 0
-
+  
     if @solution_diff.include?(symbol)
       @guessed[:correct].push symbol 
       fill_puzzle_in_with symbol

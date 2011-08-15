@@ -2,8 +2,11 @@ class Person
   attr_accessor :name
 	
   def deluded(a,b)
-    __ ____
-      ______ _____
-    ___
+    if a==b
+#   ^^ ^^^^ HANGMAN
+      return false
+#     ^^^^^^ ^^^^^ HANGMAN
+    end
+#   ^^^ HANGMAN
   end
 end
